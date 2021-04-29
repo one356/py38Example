@@ -1,0 +1,7 @@
+python3 /www/wwwroot/192.168.190.145/spyder/javdb_server.py
+python3 /www/wwwroot/192.168.190.145/spyder/123ku_com_local_index.py
+python3 /www/wwwroot/192.168.190.145/spyder/765zy_com_local_index.py
+python3 /www/wwwroot/192.168.190.145/spyder/88zyw_xyz_local_index.py
+python3 /www/wwwroot/192.168.190.145/spyder/haozy_cc_local_index.py
+
+

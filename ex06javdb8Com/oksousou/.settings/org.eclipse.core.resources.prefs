@@ -1,0 +1,5 @@
+eclipse.preferences.version=1
+encoding//src/downloadTorrent.py=utf-8
+encoding//src/libtorrentdownloadTorrent.py=utf8
+encoding//src/metautils.py=utf8
+encoding//src/startCrawler.py=utf-8

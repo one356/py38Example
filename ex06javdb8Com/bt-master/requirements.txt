@@ -1,0 +1,9 @@
+asgiref==3.3.4
+certifi==2020.12.5
+Django==3.2
+django-ratelimit==3.0.1
+PyMySQL==1.0.2
+pytz==2021.1
+sqlparse==0.4.1
+wincertstore==0.2
+uwsgi==2.0.19.1
