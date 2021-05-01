@@ -13,11 +13,14 @@ header = {
     'user-agent': 'Mozilla/5.0(WindowsNT10.0;WOW64)AppleWebKit/537.36(KHTML,likeGecko)Chrome/86.0.4240.193Safari/537.36'
 }
 start_page_number = int(input('输入要抓取开始页：'))
-end_page_number = int(input('输入要抓取结束开页：'))
+end_page_number = int(input('输入要抓取结束开页：'))+1
 kinds = ['oumei','nvshen','meinv','cosplay']
+url_list = []
 for kind in kinds:
-    url_list = ['https://www.177521.com/'+str(kind)+f'/index_{page_num}.html' for page_num in
-            range(start_page_number, end_page_number)]
+    kind_url = "https://www.177521.com/"+str(kind)
+    for page_num in range(start_page_number, end_page_number):
+        url_list.append(kind_url + "/index_{}.html".format(page_num))
+print(url_list)
 # 页面应该有400页以上，从第二页开始抓取
 # 获取每一类的前n页url地址
 def spyder_magnet(page_url):
@@ -63,7 +66,7 @@ def spyder_magnet(page_url):
 def wpsend(content, title, vido_info_kind):
     try:
         # 链接地址，登录用户名，密码
-        wp = Client('http://wh-nb6ulvw9jakg3k41rni.my3w.com/xmlrpc.php', 'bruce', 'flzx3qc@ysyhl9t')
+        wp = Client('http://magnetkey.xyz/xmlrpc.php', 'bruce', 'flzx3qc@ysyhl9t')
         # print(content)
         post = WordPressPost()
         # 设置标题内容

@@ -50,21 +50,3 @@ if __name__ == '__main__':
     span = element.find_element_by_tag_name('span')
     print(span.text)
 
-
-
-
-
-'''
-    options = webdriver.ChromeOptions()
-    options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    options.add_experimental_option('useAutomationExtension', False)
-    driver = webdriver.Chrome(options=options, executable_path=chromedriver_path)
-    driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
-        "source": """
-        Object.defineProperty(navigator, 'webdriver', {
-          get: () => undefined
-        })
-      """
-    })
-    driver.get(url)
-    '''

@@ -25,8 +25,10 @@ header = {
 }
 start_page_number = int(input('输入要抓取开始页：'))
 end_page_number = int(input('输入要抓取结束开页：'))+1
-url_list = [f'http://www.88zyw.xyz/?m=vod-index-pg-{page_num}.html' for page_num in range(start_page_number, end_page_number)]
-
+url_list = [f'https://yj1.pc20x12.com/pw/thread.php?fid=3&page={page_num}' for page_num in range(start_page_number, end_page_number,-1)]
+# 获取指定格式当前时间
+localtime = time.localtime(time.time())
+daytime = time.strftime("%Y-%m-%d %H:%M:%S", localtime)
 # 获取每一类的前2页url地址
 def spyder_magnet(page_url):
     # 页码循环
@@ -34,61 +36,54 @@ def spyder_magnet(page_url):
     response = requests.get(url=page_url, headers=header, verify=False)
     response.encoding = 'utf-8'
     soup = BeautifulSoup(response.text, 'lxml')
-    div = soup.find_all(name='div', attrs={"class": "xing_vb"})[0].find_all('ul')[1:-1]
+    div = soup.find_all(name='tbody', attrs={"style": "table-layout:fixed;"})[0].find_all('tr')[7:-1]
     # 详细内容页的<a>链接的地址
-    for i in range(0,len(div)):
+    for i in range(len(div)):
         print(page_url)
         print(i)
-        url_a = 'http://www.88zyw.xyz' + div[i].find('a').attrs['href']
-        # print(url_a)
-        #防止被封，设置不定时间隔
-        # time.sleep(random.randint(10, 15))
-        response = requests.get(url=url_a, headers=header)
-        # 重新编码
-        # response.encoding=response.apparent_encoding
-        response.encoding = 'utf-8'
-        # 实例化
-        soup = BeautifulSoup(response.text, 'lxml')
-        # 获取标题
-        title = soup.find_all('title')[0].string
-        title_replace = title.replace('88电影资源网','magnetkey.xyz')
-        # print(title_replace)
-        # 获取图片src
-        image_src = soup.find_all(name='div', attrs={"class": "vodImg"})[0].find_all('img')[0]
-        # print(image_src)
-        # 获取影片信息
-        vido_info = soup.find_all(name='div', attrs={'class': 'vodInfo'})[0]
-        # 获取影片类型
-        vido_info_kind = soup.find_all(name='div', attrs={'class': 'vodinfobox'})[0].find_all('li')[3].text
-        # 获取影片介绍
-        vido_play_info = soup.find_all(name='div', attrs={'class': 'vodplayinfo'})[0]
-        # 获取链接地址
-        div_magnet = soup.find_all(name='div', attrs={'class': 'ibox playBox'})[1]
-        # print(div_magnet)
-        # 上传信息到wordpress
-        content = '<p>'+title_replace+'\n'+str(image_src)+'\n'+str(vido_info)+'\n'+str(vido_play_info)+'\n'+str(div_magnet)+'\n'+'</p>'
-        # print(content)
-        # 调用方法上传到wordpress
-        wpsend(content,title_replace,vido_info_kind)
-        # print(title_replace)
+        url_a = 'https://yj1.pc20x12.com/pw/' + div[i].find('a').attrs['href']
+        try:
+            #防止被封，设置不定时间隔
+            time.sleep(random.randint(10, 15))
+            response = requests.get(url=url_a, headers=header)
+            # 重新编码
+            response.encoding = 'utf-8'
+            # 实例化
+            soup = BeautifulSoup(response.text, 'lxml')
+            # 获取标题
+            title = soup.find_all('title')[0].string
+            title_replace = title.replace('BT伙计', 'magnetkey.xyz')
+            # 获取合集正文中a链接地址
+            a_list = soup.find_all(name='div', attrs={"class": "tpc_content"})[0].find_all('a')
+            magnetkeys = []
+            for a in a_list:
+                magnetkeys.append(a.text.split('/')[-1] + '\n')
+            magnetkey_upcode ='magnet:?xt=urn:btih:'.join(magnetkeys)
+            # 上传信息到wordpress
+            content = '<p>'+title_replace+'\n'+magnetkey_upcode+'\n'+'</p>'
+            # 调用方法上传到wordpress
+            wpsend(content,title_replace)
+            print(title_replace)
+        except:
+            print('未找到指定的页面-----',url_a)
 
 
-def wpsend(content,title,vido_info_kind):
+
+def wpsend(content,title):
     try:
         # 链接地址，登录用户名，密码
-        wp = Client('http://wh-nb6ulvw9jakg3k41rni.my3w.com/xmlrpc.php',  'bruce','flzx3qc@ysyhl9t')
+        wp = Client('http://magnetkey.xyz/xmlrpc.php',  'bruce','flzx3qc@ysyhl9t')
         # print(content)
         post = WordPressPost()
         post.title = str(title)
         post.content = " ''' " + content + " ''' "
         post.post_status = 'publish'
         post.terms_names = {
-            'post_tag': ['影视'],
-            'category': ['影视','链接资源',vido_info_kind]
+            'post_tag': ['magnet'],
+            'category': ['福利','magnet']
         }
         wp.call(NewPost(post))
-        localtime = time.localtime(time.time())
-        print('文档已上传 {}'.format(time.strftime("%Y-%m-%d %H:%M:%S", localtime)))
+        print('文档已上传 {}'.format(daytime))
     except:
         print('没有上传成功')
 
@@ -101,7 +96,7 @@ def multi_thread():
         )
     for thread in threads_list:
         # 设置上传速度，否则会无法上传
-        time.sleep(random.randint(35, 140))
+        time.sleep(random.randint(70, 140))
         thread.start()
     for thread in threads_list:
         thread.join()

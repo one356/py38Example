@@ -71,7 +71,7 @@ def spyder_magnet(page_url):
 def wpsend(content, title, vido_info_kind):
     try:
         # 链接地址，登录用户名，密码
-        wp = Client('http://wh-nb6ulvw9jakg3k41rni.my3w.com/xmlrpc.php', 'bruce', 'flzx3qc@ysyhl9t')
+        wp = Client('http://magnetkey.xyz/xmlrpc.php', 'bruce', 'flzx3qc@ysyhl9t')
         # print(content)
         post = WordPressPost()
         # 设置标题内容
@@ -102,12 +102,19 @@ def multi_thread():
         )
     for thread in threads_list:
         # 设置上传速度，否则会无法上传
-        time.sleep(random.randint(35, 140))
+        time.sleep(random.randint(60, 140))
         thread.start()
     for thread in threads_list:
         thread.join()
 
 
 if __name__ == '__main__':
-    # 返回单页信息
-    multi_thread()
+    # 多线程启动
+    # multi_thread()
+
+    # 单线程采集
+    for url in url_list:
+        try:
+            spyder_magnet(url)
+        except:
+            print('没有采集到的页面链接：',url)
