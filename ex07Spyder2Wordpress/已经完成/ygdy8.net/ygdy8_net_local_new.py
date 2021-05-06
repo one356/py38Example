@@ -55,7 +55,7 @@ def spyder_magnet():
                 div_magnet_a = '<a href="'+div_magnet+'">下载点击此磁力链接</a>'
                 # 上传信息到wordpress
                 content = '<p>' + title_replace + '\n' + str(div_info) + '\n' + str(div_magnet_a) + '\n' + '</p>'
-                print('上传信息',content)
+                # print('上传信息',content)
                 # 调用方法上传到wordpress
                 wpsend(content,title_replace)
                 # print(title_replace)
@@ -68,7 +68,7 @@ def spyder_magnet():
 def wpsend(content, title):
     try:
         # 链接地址，登录用户名，密码
-        wp = Client('http://wh-nb6ulvw9jakg3k41rni.my3w.com/xmlrpc.php', 'bruce', 'flzx3qc@ysyhl9t')
+        wp = Client('http://magnetkey.xyz/xmlrpc.php', 'bruce', 'flzx3qc@ysyhl9t')
         # print(content)
         post = WordPressPost()
         # 设置标题内容

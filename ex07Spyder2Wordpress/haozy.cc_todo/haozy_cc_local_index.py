@@ -37,7 +37,7 @@ def spyder_magnet():
             div = soup.find_all(name='div', attrs={"class": "xing_vb"})[0].find_all('ul')[1:-1]
             # 详细内容页的<a>链接的地址
             for i in range(0,len(div)):
-                url_a = 'http://www.haozy.cc' + div[i].find('a').attrs['href']
+                url_a = 'http://wwwhaozy.cc' + div[i].find('a').attrs['href']
                 print(url_a)
                 #防止被封，设置不定时间隔
                 # time.sleep(random.randint(1, 4))

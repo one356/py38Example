@@ -15,7 +15,7 @@ header = {
 }
 # 指定大类
 start_page_number = int(input('输入要抓取开始页：'))
-end_page_number = int(input('输入要抓取结束开页：'))
+end_page_number = int(input('输入要抓取结束开页：'))+1
 url_list = [f'http://www.765zy.com/?m=vod-index-pg-{page_num}.html' for page_num in
             range(start_page_number, end_page_number)]
 

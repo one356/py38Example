@@ -25,7 +25,7 @@ header = {
 }
 start_page_number = int(input('输入要抓取开始页：'))
 end_page_number = int(input('输入要抓取结束开页：'))+1
-url_list = [f'https://yj1.pc20x12.com/pw/thread.php?fid=3&page={page_num}' for page_num in range(start_page_number, end_page_number,-1)]
+url_list = [f'https://yj1.pc20x12.com/pw/thread.php?fid=3&page={page_num}' for page_num in range(start_page_number, end_page_number)]
 # 获取指定格式当前时间
 localtime = time.localtime(time.time())
 daytime = time.strftime("%Y-%m-%d %H:%M:%S", localtime)
@@ -36,7 +36,8 @@ def spyder_magnet(page_url):
     response = requests.get(url=page_url, headers=header, verify=False)
     response.encoding = 'utf-8'
     soup = BeautifulSoup(response.text, 'lxml')
-    div = soup.find_all(name='tbody', attrs={"style": "table-layout:fixed;"})[0].find_all('tr')[7:-1]
+    div = soup.find_all(name='tbody', attrs={"style": "table-layout:fixed;"})[0].find_all('tr')[8:-1]
+    # print(div)
     # 详细内容页的<a>链接的地址
     for i in range(len(div)):
         print(page_url)
@@ -44,7 +45,7 @@ def spyder_magnet(page_url):
         url_a = 'https://yj1.pc20x12.com/pw/' + div[i].find('a').attrs['href']
         try:
             #防止被封，设置不定时间隔
-            time.sleep(random.randint(10, 15))
+            # time.sleep(random.randint(10, 15))
             response = requests.get(url=url_a, headers=header)
             # 重新编码
             response.encoding = 'utf-8'
@@ -73,6 +74,7 @@ def wpsend(content,title):
     try:
         # 链接地址，登录用户名，密码
         wp = Client('http://magnetkey.xyz/xmlrpc.php',  'bruce','flzx3qc@ysyhl9t')
+        # wp = Client('http://192.168.190.145/xmlrpc.php',  'bruce','12345678')
         # print(content)
         post = WordPressPost()
         post.title = str(title)
@@ -96,7 +98,7 @@ def multi_thread():
         )
     for thread in threads_list:
         # 设置上传速度，否则会无法上传
-        time.sleep(random.randint(70, 140))
+        # time.sleep(random.randint(30, 140))
         thread.start()
     for thread in threads_list:
         thread.join()

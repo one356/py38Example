@@ -9,14 +9,14 @@ import threading
 
 # 避免警告信息
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-# url ='http://www.88zyw.xyz/'
+# url ='http://www.123ku.com'
 header = {
     'user-agent':'Mozilla/5.0(WindowsNT10.0;WOW64)AppleWebKit/537.36(KHTML,likeGecko)Chrome/86.0.4240.193Safari/537.36'
 }
 # 指定大类
 start_page_number = int(input('输入要抓取开始页：'))
 end_page_number = int(input('输入要抓取结束开页：'))
-url_list = [f'http://www.123ku.com/?m=vod-index-pg-{page_num}.html' for page_num in
+url_list = [f'/?m=vod-index-pg-{page_num}.html' for page_num in
             range(start_page_number, end_page_number)]
 
 
@@ -67,7 +67,7 @@ def spyder_magnet(page_url):
 def wpsend(content, title, vido_info_kind):
     try:
         # 链接地址，登录用户名，密码
-        wp = Client('http://wh-nb6ulvw9jakg3k41rni.my3w.com/xmlrpc.php', 'bruce', 'flzx3qc@ysyhl9t')
+        wp = Client('http://magnetkey.xyz/xmlrpc.php', 'bruce', 'flzx3qc@ysyhl9t')
         post = WordPressPost()
         # 设置标题内容
         post.title = str(title)
