@@ -11,14 +11,15 @@ import threading
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 # url ='http://www.765zy.com/'
 header = {
-    'user-agent':'Mozilla/5.0(WindowsNT10.0;WOW64)AppleWebKit/537.36(KHTML,likeGecko)Chrome/86.0.4240.193Safari/537.36'
+    'user-agent': 'Mozilla/5.0(WindowsNT10.0;WOW64)AppleWebKit/537.36(KHTML,likeGecko)Chrome/86.0.4240.193Safari/537.36'
 }
 # 指定大类
+# 倒叙排列开始数字要是大的
 start_page_number = int(input('输入要抓取开始页：'))
-end_page_number = int(input('输入要抓取结束开页：'))+1
+end_page_number = int(input('输入要抓取结束开页：'))-1
 url_list = [f'http://www.765zy.com/?m=vod-index-pg-{page_num}.html' for page_num in
             range(start_page_number, end_page_number,-1)]
-
+print(url_list)
 
 # 获取每一类的前n页url地址
 def spyder_magnet(page_url):
@@ -58,11 +59,11 @@ def spyder_magnet(page_url):
         video_play_info = soup.find_all(name='div', attrs={'class': 'vodplayinfo'})[0]
         # 获取链接地址并更换成可以播放的video标签
         div_magnet = soup.find_all(name='div', attrs={'class': 'ibox playBox'})[1].find_all('ul')[1].text
-        m3u8d =div_magnet.replace('$','[videojs url="').replace('m3u8','m3u8"]').replace('待补','"]')
+        m3u8d = div_magnet.replace('$', '[videojs url="').replace('m3u8', 'm3u8"]').replace('待补', '"]')
         # print(m3u8d)
         # 上传信息到wordpress
         content = '<p>' + str(image_src_replace) + '\n' + str(video_info) + '\n' + str(
-            video_play_info) + '\n' + str(m3u8d) + '\n' + '</p>'
+            video_play_info) + '\n' + str(m3u8d) + '\n' + str(div_magnet) + '\n' + '</p>'
         # print(content)
         # 调用方法上传到wordpress
         wpsend(content, title_replace, vido_info_kind)
@@ -120,4 +121,3 @@ if __name__ == '__main__':
     #         spyder_magnet(url)
     #     except:
     #         print('没有采集到的页面链接：',url)
-
