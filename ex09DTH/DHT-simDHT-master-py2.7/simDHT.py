@@ -1,6 +1,6 @@
-#encoding: utf-8
-#！/usr/bin
-#!/usr/bin/env python
+# encoding: utf-8
+# ！/usr/bin
+# !/usr/bin/env python
 import socket
 import logging
 from hashlib import sha1
@@ -18,14 +18,14 @@ BOOTSTRAP_NODES = [
     ("router.bittorrent.com", 6881),
     ("dht.transmissionbt.com", 6881),
     ("router.utorrent.com", 6881)
-] 
+]
 
 TID_LENGTH = 4
 RE_JOIN_DHT_INTERVAL = 10
 THREAD_NUMBER = 3
 
-def initialLog():
 
+def initialLog():
     stdLogLevel = logging.DEBUG
     fileLogLevel = logging.DEBUG
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -38,36 +38,41 @@ def initialLog():
     logging.getLogger("std_log").setLevel(stdLogLevel)
     logging.getLogger("std_log").addHandler(stdout_handler)
 
+
 def entropy(length):
     chars = []
     for i in range(length):
         chars.append(chr(randint(0, 255)))
     return "".join(chars)
 
+
 def random_id():
     hash = sha1()
     hash.update(entropy(20))
     return hash.digest()
 
+
 def decode_nodes(nodes):
     n = []
     length = len(nodes)
-    if (length % 26) != 0: 
+    if (length % 26) != 0:
         return n
 
     for i in range(0, length, 26):
-        nid = nodes[i:i+20]
-        ip = inet_ntoa(nodes[i+20:i+24])
-        port = unpack("!H", nodes[i+24:i+26])[0]
+        nid = nodes[i:i + 20]
+        ip = inet_ntoa(nodes[i + 20:i + 24])
+        port = unpack("!H", nodes[i + 24:i + 26])[0]
         n.append((nid, ip, port))
 
     return n
 
+
 def timer(t, f):
     Timer(t, f).start()
 
+
 def get_neighbor(target, end=10):
-    return target[:end]+random_id()[end:]
+    return target[:end] + random_id()[end:]
 
 
 class DHT(Thread):
@@ -82,12 +87,12 @@ class DHT(Thread):
         self.bind_port = bind_port
         self.max_node_qsize = max_node_qsize
         self.table = KTable()
-        self.ufd = socket.socket(socket.AF_INET,socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        self.ufd = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         self.ufd.bind((self.bind_ip, self.bind_port))
-        self.server_thread=Thread(target=self.server)
-        self.client_thread=Thread(target=self.client)
-        self.server_thread.daemon=True
-        self.client_thread.daemon=True
+        self.server_thread = Thread(target=self.server)
+        self.client_thread = Thread(target=self.client)
+        self.server_thread.daemon = True
+        self.client_thread.daemon = True
 
         timer(RE_JOIN_DHT_INTERVAL, self.join_DHT)
 
@@ -116,13 +121,13 @@ class DHT(Thread):
                 stdger.debug("send packet")
                 self.send_find_node((node.ip, node.port), node.nid)
 
-            #is the list in python thread-safe
+            # is the list in python thread-safe
             size = len(self.table.nodes)
-            head = size-self.max_node_qsize
+            head = size - self.max_node_qsize
 
             if head < 0:
                 head = 0
-            self.table.nodes = self.table.nodes[head : size]
+            self.table.nodes = self.table.nodes[head: size]
             sleep(1)
 
     def on_message(self, msg, address):
@@ -140,39 +145,37 @@ class DHT(Thread):
         except KeyError, e:
             pass
 
-    #send msg to a specified address
+    # send msg to a specified address
     def send_krpc(self, msg, address):
         try:
             self.ufd.sendto(bencode(msg), address)
         except:
             pass
 
-    #send udp message
+    # send udp message
     def send_find_node(self, address, nid=None):
         nid = get_neighbor(nid) if nid else self.table.nid
-        #token id
+        # token id
         tid = entropy(TID_LENGTH)
-        #random_id() quite good idea
+        # random_id() quite good idea
         msg = dict(
-            t = tid,
-            y = "q",
-            q = "find_node",
-            a = dict(id = nid, target = random_id())
+            t=tid,
+            y="q",
+            q="find_node",
+            a=dict(id=nid, target=random_id())
         )
         self.send_krpc(msg, address)
 
-    #only need to send a random_id to the bootstrap node.
+    # only need to send a random_id to the bootstrap node.
     def join_DHT(self):
-        for address in BOOTSTRAP_NODES: 
+        for address in BOOTSTRAP_NODES:
             self.send_find_node(address)
-
-
 
     def play_dead(self, tid, address):
         msg = dict(
-            t = tid,
-            y = "e",
-            e = [202, "Server Error"]
+            t=tid,
+            y="e",
+            e=[202, "Server Error"]
         )
         self.send_krpc(msg, address)
 
@@ -206,6 +209,7 @@ class DHT(Thread):
         self.isClientWorking = False
         self.isServerWorking = False
 
+
 class KTable():
     def __init__(self):
         self.nid = random_id()
@@ -228,32 +232,31 @@ class KNode(object):
         return hash(self.nid)
 
 
-#using example
+# using example
 class Master(object):
 
     def log(self, infohash, address=None):
         stdger.debug("%s from %s:%s" % (infohash.encode("hex"), address[0], address[1]))
-        fileger.debug('%s from %s:%s' % (infohash.encode('hex').upper(),address[0],address[1]))
+        fileger.debug('%s from %s:%s' % (infohash.encode('hex').upper(), address[0], address[1]))
 
 
 if __name__ == "__main__":
-    #max_node_qsize bigger, bandwith bigger, spped higher
+    # max_node_qsize bigger, bandwith bigger, spped higher
     initialLog()
     threads = []
     for i in xrange(THREAD_NUMBER):
-        port = i+9500
+        port = i + 9500
         stdger.debug("start thread %d" % port)
-        dht=DHT(Master(), "0.0.0.0", port, max_node_qsize=1000)
+        dht = DHT(Master(), "0.0.0.0", port, max_node_qsize=1000)
         dht.start()
         threads.append(dht)
         sleep(1)
 
-
-    sleep(60*60*6)
+    sleep(60 * 60 * 6)
 
     k = 0
     for i in threads:
         stdger.debug("stop thread %d" % k)
         i.stop()
         i.join()
-        k=k+1
+        k = k + 1

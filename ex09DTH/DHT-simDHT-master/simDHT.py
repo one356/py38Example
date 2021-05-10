@@ -46,7 +46,7 @@ def entropy(length):
 
 def random_id():
     hash = sha1()
-    hash.update(entropy(20).encode("utf8"))
+    hash.update(entropy(20))
     return hash.digest()
 
 def decode_nodes(nodes):

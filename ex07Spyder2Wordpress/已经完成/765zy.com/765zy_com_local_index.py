@@ -17,7 +17,7 @@ header = {
 start_page_number = int(input('输入要抓取开始页：'))
 end_page_number = int(input('输入要抓取结束开页：'))+1
 url_list = [f'http://www.765zy.com/?m=vod-index-pg-{page_num}.html' for page_num in
-            range(start_page_number, end_page_number)]
+            range(start_page_number, end_page_number,-1)]
 
 
 # 获取每一类的前n页url地址
@@ -51,27 +51,29 @@ def spyder_magnet(page_url):
         image_src_replace = image_src.replace('/.', 'http://www.765zy.com')
         # print(image_src_replace)
         # 获取影片信息
-        vido_info = soup.find_all(name='div', attrs={'class': 'vodInfo'})[0]
+        video_info = soup.find_all(name='div', attrs={'class': 'vodInfo'})[0]
         # 获取影片类型
         vido_info_kind = soup.find_all(name='div', attrs={'class': 'vodinfobox'})[0].find_all('li')[4].text
         # 获取影片介绍
-        vido_play_info = soup.find_all(name='div', attrs={'class': 'vodplayinfo'})[0]
-        # 获取链接地址
-        div_magnet = soup.find_all(name='div', attrs={'class': 'ibox playBox'})[1]
-        # print(div_magnet)
+        video_play_info = soup.find_all(name='div', attrs={'class': 'vodplayinfo'})[0]
+        # 获取链接地址并更换成可以播放的video标签
+        div_magnet = soup.find_all(name='div', attrs={'class': 'ibox playBox'})[1].find_all('ul')[1].text
+        m3u8d =div_magnet.replace('$','[videojs url="').replace('m3u8','m3u8"]').replace('待补','"]')
+        # print(m3u8d)
         # 上传信息到wordpress
-        content = '<p>' + str(image_src_replace) + '\n' + str(vido_info) + '\n' + str(
-            vido_play_info) + '\n' + str(div_magnet) + '\n' + '</p>'
+        content = '<p>' + str(image_src_replace) + '\n' + str(video_info) + '\n' + str(
+            video_play_info) + '\n' + str(m3u8d) + '\n' + '</p>'
         # print(content)
         # 调用方法上传到wordpress
         wpsend(content, title_replace, vido_info_kind)
-        # print(title_replace)
+        print(title_replace)
 
 
 def wpsend(content, title, vido_info_kind):
     try:
         # 链接地址，登录用户名，密码
         wp = Client('http://magnetkey.xyz/xmlrpc.php', 'bruce', 'flzx3qc@ysyhl9t')
+        # wp = Client('http://192.168.190.145/xmlrpc.php', 'bruce', '12345678')
         # print(content)
         post = WordPressPost()
         # 设置标题内容
@@ -83,7 +85,7 @@ def wpsend(content, title, vido_info_kind):
         # 设置标签，分类
         post.terms_names = {
             'post_tag': ['影视'],
-            'category': ['影视', '链接资源', vido_info_kind]
+            'category': ['影视', '在线播放资源', vido_info_kind]
         }
         # # 新建文章
         wp.call(NewPost(post))
@@ -110,11 +112,12 @@ def multi_thread():
 
 if __name__ == '__main__':
     # 多线程启动
-    # multi_thread()
+    multi_thread()
 
     # 单线程采集
-    for url in url_list:
-        try:
-            spyder_magnet(url)
-        except:
-            print('没有采集到的页面链接：',url)
+    # for url in url_list:
+    #     try:
+    #         spyder_magnet(url)
+    #     except:
+    #         print('没有采集到的页面链接：',url)
+
