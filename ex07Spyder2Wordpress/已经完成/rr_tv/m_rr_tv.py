@@ -109,7 +109,7 @@ def wpsend(content, title, vido_info_kind):
 
 
 if __name__ == '__main__':
-    start_page = input('输入想要抓取的页数：')
+    start_page = int(input('输入想要抓取的页数：'))
     for i in range(start_page, 0, -1):
         url = "https://content.json.rr.tv/morpheus/filter/all/all/all/all/all/latest/{}?5-11-7".format(i)
         spyder(url)
