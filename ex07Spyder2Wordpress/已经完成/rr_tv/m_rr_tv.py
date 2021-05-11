@@ -44,43 +44,48 @@ def spyder(url):
         score = data['score']
         # 标题
         title = data['title']
+        # 第几季
+        seasonNum = data['seasonNum']
         # 类型
         type = data['type']
         #获取详细页
         url_id = 'http://m.rr.tv/detail/{}?snum=1'.format(id)
-        response_id = requests.get(url=url_id,headers=header)
-        # 重新编码
-        # response.encoding=response.apparent_encoding
-        response_id.encoding = 'utf-8'
-        soup = BeautifulSoup(response_id.text,'lxml')
-        # 获取可播放剧集数
-        id_number = soup.find_all(name='ul',attrs={"class":"episode-list"})[0].find_all('li')[-1].string
-        # print(id_number)
-        # 循环获取剧集cdn地址
-        videojs_list=[]
-        for number in range(1,int(id_number)):
-            url_number = url_id.replace('snum=1','snum={}'.format(number))
-            # 定义浏览器对象，调用浏览器驱动打开浏览器
-            wd = webdriver.Chrome(chromedriver_path)
-            # 给让浏览器对象按指定方式访问网页对象，有get；post两种方式
-            wd.get(url_number)
-            # 隐式等待时间，如果请求没有响应，每隔半秒检查一下，直到指定时间之内一直尝试。
-            # wd.implicitly_wait(5)
-            time.sleep(random.randint(3,5))
-            # 获取元素
-            cdn = wd.find_element_by_xpath("//*[@id='__layout']/div/main/div[2]/video").get_attribute("src")
-            # print(cdn)
-            videojs = f'<a href="{cdn}" target="_blank">在线播放第{number}集</a><br>'
-            # print(videojs)
-            videojs_list.append(videojs)
-            wd.close()
-        # print(videojs_list)
-        # 上传信息到wordpress
-        content = '<p>' +str(title)+ '\n'+ str(img) + '\n' + '评分：'+str(score) + '\n' + str(videojs_list) + '\n' + '</p>'
-        # print(content)
-        # 调用方法上传到wordpress
-        wpsend(content, title, type)
-        # print(title)
+        try:
+            response_id = requests.get(url=url_id,headers=header)
+            # 重新编码
+            # response.encoding=response.apparent_encoding
+            response_id.encoding = 'utf-8'
+            soup = BeautifulSoup(response_id.text,'lxml')
+            # 获取可播放剧集数
+            id_number = soup.find_all(name='ul',attrs={"class":"episode-list"})[0].find_all('li')[-1].string
+            # print(id_number)
+            # 循环获取剧集cdn地址
+            videojs_list=[]
+            for number in range(1,int(id_number)):
+                url_number = url_id.replace('snum=1','snum={}'.format(number))
+                # 定义浏览器对象，调用浏览器驱动打开浏览器
+                wd = webdriver.Chrome(chromedriver_path)
+                # 给让浏览器对象按指定方式访问网页对象，有get；post两种方式
+                wd.get(url_number)
+                # 隐式等待时间，如果请求没有响应，每隔半秒检查一下，直到指定时间之内一直尝试。
+                # wd.implicitly_wait(5)
+                time.sleep(random.randint(3,5))
+                # 获取元素
+                cdn = wd.find_element_by_xpath("//*[@id='__layout']/div/main/div[2]/video").get_attribute("src")
+                # print(cdn)
+                videojs = f'<a href="{cdn}" target="_blank">在线播放第{number}集</a><br>'
+                # print(videojs)
+                videojs_list.append(videojs)
+                wd.close()
+            # print(videojs_list)
+            # 上传信息到wordpress
+            content = '<p>' +str(title)+ '\n'+str(seasonNum)+ '\n'+ str(img) + '\n' + '评分：'+str(score) + '\n' + str(videojs_list) + '\n' + '</p>'
+            # print(content)
+            # 调用方法上传到wordpress
+            wpsend(content, title, type)
+            # print(title)
+        except:
+            print("没有请求到：",title)
 
 def wpsend(content, title, vido_info_kind):
     try:
