@@ -14,7 +14,6 @@ from wordpress_xmlrpc import Client, WordPressPost
 from wordpress_xmlrpc.methods.posts import NewPost
 import time
 import requests
-import threading
 import json
 from bs4 import BeautifulSoup
 from selenium import webdriver

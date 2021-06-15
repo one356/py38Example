@@ -74,7 +74,7 @@ def wpsend(content,title):
         post.post_status = 'publish'
         post.terms_names = {
             'post_tag': ['magnet'],
-            'category': ['福利','magnet']
+            'category': ['magnet']
         }
         wp.call(NewPost(post))
         localtime = time.localtime(time.time())
@@ -90,7 +90,7 @@ def mutli_thread():
         )
     for thread in threads_list:
         # 设置上传速度，否则会无法上传
-        time.sleep(random.randint(40, 60))
+        # time.sleep(random.randint(40, 60))
         thread.start()
     for thread in threads_list:
         thread.join()
@@ -99,5 +99,5 @@ def mutli_thread():
 if __name__ == '__main__':
     # 返回单页信息
     mutli_thread()
-    # url = 'https://javdb8.com/western/?page=64&vft=1&vst=1'
+    # url = 'https://javdb8.com/uncensored?page=2'
     # spyder_magnet(url)

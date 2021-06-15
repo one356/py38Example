@@ -41,6 +41,7 @@ def series_url(url_list):
         response.encoding = 'utf-8'
         soup = BeautifulSoup(response.text, 'lxml')
         series_div_list = soup.find_all(name='div', attrs={"id": "series"})[0].find_all('a')
+        # print(series_div_list)
         for series_div in series_div_list:
             for series_page in range(1, 20):
                 series_div_url = 'https://javdb8.com' + series_div.attrs['href'] + f'?page={series_page}'
@@ -59,8 +60,8 @@ def spyder_magnet(page_url):
     # 详细内容页的<a>链接的地址
         for url in div:
             url_a = 'https://javdb8.com' + url.attrs['href']
-            print('分类',vido_info_kind)
-            print('详细页链接地址',url_a)
+            # print('分类',vido_info_kind)
+            # print('详细页链接地址',url_a)
             #防止被封，设置不定时间隔
             time.sleep(random.randint(5, 10))
             response = requests.get(url=url_a, headers=header)
@@ -72,16 +73,21 @@ def spyder_magnet(page_url):
             # 获取标题
             title = soup.find_all('title')[0].string
             title_replace = title.replace('JavDB','magnetkey.xyz')
+            # print(title_replace)
             # 获取图片src
             image = soup.find_all(name='div', attrs={"class": "column column-video-cover"})[0].find_all('img')[0]
             image_src = '<a href="'+image.attrs['src']+'" target="_blank">点击预览图片</a>'
+            print('image',image)
             # 获取magnet
-            video_info_list = soup.find_all(name='nav',attrs={'class':"panel video-panel-info"})[0].find_all('div')[0:8]
+            video_info_list = soup.find_all(name='nav',attrs={'class':"panel movie-panel-info"})[0].find_all('div')[0:8]
             video_info = ''.join('%s' %id for id in video_info_list)
+            print('video_info_list',video_info_list)
             # 获取magnet
             div_magnet = soup.find_all(name='div', attrs={'id': 'magnets-content'})[0]
+            print('div_magnet',div_magnet)
             # 上传信息到wordpress
             content = '<p>'+str(image_src)+'\n'+video_info+'\n'+str(div_magnet)+'\n'+'</p>'
+            print('content',content)
             # 调用方法上传到wordpress
             wpsend(content,title_replace,vido_info_kind)
             # print(content)
